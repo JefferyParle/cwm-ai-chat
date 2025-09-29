@@ -1,4 +1,4 @@
-import ChatBot from './components/ChatBot';
+import ChatBot from './components/chat/ChatBot';
 import { ThemeProvider } from './components/ThemeProvider';
 
 function App() {
