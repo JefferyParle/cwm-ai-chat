@@ -1,5 +1,6 @@
-import { useRef, useState, type KeyboardEvent } from 'react';
 import axios from 'axios';
+import { useRef, useState, type KeyboardEvent } from 'react';
+import ReactMarkdown from 'react-markdown';
 import { useForm } from 'react-hook-form';
 import { Button } from './ui/button';
 import { FaArrowUp } from 'react-icons/fa';
@@ -19,11 +20,13 @@ interface Message {
 
 const ChatBot = () => {
   const [messages, setMessages] = useState<Message[]>([]);
+  const [isBotTyping, setIsBotTyping] = useState(false);
   const conversationId = useRef(crypto.randomUUID());
   const { register, handleSubmit, reset, formState } = useForm<FormData>();
 
   const onSubmit = async ({ prompt }: FormData) => {
     setMessages((prev) => [...prev, { content: prompt, role: 'user' }]);
+    setIsBotTyping(true);
 
     reset();
 
@@ -32,6 +35,7 @@ const ChatBot = () => {
       conversationId: conversationId.current,
     });
     setMessages((prev) => [...prev, { content: data.message, role: 'bot' }]);
+    setIsBotTyping(false);
   };
 
   const onKeyDown = (e: KeyboardEvent<HTMLFormElement>) => {
@@ -45,13 +49,20 @@ const ChatBot = () => {
     <div>
       <div className="flex flex-col gap-3 mb-4">
         {messages.map((message, index) => (
-          <p
+          <div
             key={index}
-            className={`px-4 py-2 rounded-full ${message.role === 'user' ? 'bg-blue-600 text-white self-end' : 'bg-gray-100 text-black self-start'}`}
+            className={`px-4 py-2 rounded-2xl ${message.role === 'user' ? 'bg-blue-600 text-white self-end' : 'bg-gray-100 text-black self-start'}`}
           >
-            {message.content}
-          </p>
+            <ReactMarkdown>{message.content}</ReactMarkdown>
+          </div>
         ))}
+        {isBotTyping && (
+          <div className="flex gap-1 px-4 py-2 bg-gray-100 rounded-2xl self-start">
+            <div className="w-2 h-2 rounded-full bg-gray-800 animate-pulse"></div>
+            <div className="w-2 h-2 rounded-full bg-gray-800 animate-pulse [animation-delay:0.2s]"></div>
+            <div className="w-2 h-2 rounded-full bg-gray-800 animate-pulse [animation-delay:0.4s]"></div>
+          </div>
+        )}
       </div>
       <form
         onSubmit={handleSubmit(onSubmit)}
