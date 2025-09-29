@@ -1,5 +1,11 @@
 import axios from 'axios';
-import { useRef, useState, type KeyboardEvent } from 'react';
+import {
+  useEffect,
+  useRef,
+  useState,
+  type KeyboardEvent,
+  type ClipboardEvent,
+} from 'react';
 import ReactMarkdown from 'react-markdown';
 import { useForm } from 'react-hook-form';
 import { Button } from './ui/button';
@@ -21,14 +27,19 @@ interface Message {
 const ChatBot = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isBotTyping, setIsBotTyping] = useState(false);
+  const lastMessageRef = useRef<HTMLDivElement | null>(null);
   const conversationId = useRef(crypto.randomUUID());
   const { register, handleSubmit, reset, formState } = useForm<FormData>();
+
+  useEffect(() => {
+    lastMessageRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
 
   const onSubmit = async ({ prompt }: FormData) => {
     setMessages((prev) => [...prev, { content: prompt, role: 'user' }]);
     setIsBotTyping(true);
 
-    reset();
+    reset({ prompt: '' });
 
     const { data } = await axios.post<ChatReponse>('/api/chat', {
       prompt,
@@ -45,12 +56,22 @@ const ChatBot = () => {
     }
   };
 
+  const onCopyMessage = (e: ClipboardEvent<HTMLDivElement>) => {
+    const selection = window.getSelection()?.toString().trim();
+    if (selection) {
+      e.preventDefault();
+      e.clipboardData.setData('text/plain', selection);
+    }
+  };
+
   return (
-    <div>
-      <div className="flex flex-col gap-3 mb-4">
+    <div className="flex flex-col h-full">
+      <div className="flex flex-col flex-1 gap-3 mb-4 overflow-y-auto">
         {messages.map((message, index) => (
           <div
             key={index}
+            onCopy={onCopyMessage}
+            ref={index === messages.length - 1 ? lastMessageRef : null}
             className={`px-4 py-2 rounded-2xl ${message.role === 'user' ? 'bg-blue-600 text-white self-end' : 'bg-gray-100 text-black self-start'}`}
           >
             <ReactMarkdown>{message.content}</ReactMarkdown>
@@ -74,6 +95,7 @@ const ChatBot = () => {
             required: true,
             validate: (data) => data.trim().length > 0,
           })}
+          autoFocus
           className="w-full min-h-40 border-2 p-4 rounded-3xl focus:outline-0 resize-none"
           placeholder="Ask anything"
           maxLength={1000}
