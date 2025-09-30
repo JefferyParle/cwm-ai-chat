@@ -35,7 +35,7 @@ const ChatMessages = ({ messages }: ChatMessagesProps) => {
           key={index}
           onCopy={onCopyMessage}
           ref={index === messages.length - 1 ? lastMessageRef : null}
-          className={`px-4 py-1 max-w-lg rounded-2xl markdown ${message.role === 'user' ? 'bg-blue-600 text-white self-end' : 'bg-gray-100 text-black self-start'}`}
+          className={`px-4 py-3 max-w-lg rounded-2xl markdown ${message.role === 'user' ? 'bg-blue-600 text-white self-end' : 'bg-gray-100 text-black self-start'}`}
         >
           <ReactMarkdown remarkPlugins={[remarkGfm]}>
             {message.content}

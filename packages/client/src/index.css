@@ -120,12 +120,12 @@
   .markdown h1 {
     font-size: 1.5rem;
     font-weight: bold;
-    margin: 1rem 0;
+    margin-bottom: 1rem;
   }
   .markdown h2 {
     font-size: 1.25rem;
     font-weight: 600;
-    margin: 1rem 0;
+    margin-bottom: 1rem;
   }
   .markdown ul {
     list-style: disc;
@@ -136,6 +136,9 @@
     margin-left: 1.5rem;
   }
   .markdown p {
-    margin: 0.5rem 0;
+    margin-bottom: 0.5rem;
+  }
+  .markdown > :last-child {
+    margin-bottom: 0;
   }
 }
