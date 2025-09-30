@@ -1,4 +1,5 @@
 import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import { useEffect, useRef, type ClipboardEvent } from 'react';
 
 interface ChatMessagesProps {
@@ -25,6 +26,8 @@ const ChatMessages = ({ messages }: ChatMessagesProps) => {
     }
   };
 
+  console.log(messages);
+
   return (
     <>
       {messages.map((message, index) => (
@@ -32,9 +35,11 @@ const ChatMessages = ({ messages }: ChatMessagesProps) => {
           key={index}
           onCopy={onCopyMessage}
           ref={index === messages.length - 1 ? lastMessageRef : null}
-          className={`px-4 py-2 rounded-2xl ${message.role === 'user' ? 'bg-blue-600 text-white self-end' : 'bg-gray-100 text-black self-start'}`}
+          className={`px-4 py-1 max-w-lg rounded-2xl markdown ${message.role === 'user' ? 'bg-blue-600 text-white self-end' : 'bg-gray-100 text-black self-start'}`}
         >
-          <ReactMarkdown>{message.content}</ReactMarkdown>
+          <ReactMarkdown remarkPlugins={[remarkGfm]}>
+            {message.content}
+          </ReactMarkdown>
         </div>
       ))}
     </>
