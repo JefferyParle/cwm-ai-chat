@@ -15,6 +15,10 @@ router.get('/api/hello', (req: Request, res: Response) => {
 });
 
 router.get('/api/products/:id/reviews', reviewController.getReviews);
+router.post(
+  '/api/products/:id/reviews/summarize',
+  reviewController.summarizeReviews
+);
 
 router.post('/api/chat', chatController.sendMessage);
 
